@@ -1,0 +1,26 @@
+* {
+    box-sizing: border box
+  }
+  
+  .cell {
+    height: 20vh;
+    width: 20vh;
+    border: 2px solid;
+    box-shadow: 0 0 0 2px;
+    align-items: center;
+    color: orange;
+  }
+  
+  #cellContainer {
+    display: grid;
+    flex-direction: column;
+    justify-content: center;
+    grid-template-columns: repeat(3, auto);
+    margin: auto;
+  }
+  
+  #gameContainer {
+    font-size: 6vmin;
+    color: green;
+    text-align: center;
+  }
