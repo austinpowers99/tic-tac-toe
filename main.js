@@ -1,87 +1,106 @@
 const COLORS = {
-    "X": "purple",
-    "O": "yellow",
-  };
-  
-  let options;
-  let turn;
-  let winner;
-  const board = []; // Define and populate the board array
-  
-  const cell = document.querySelectorAll(".cell");
-  const statusText = document.querySelector('#statusText');
-  const playAgainBtn = document.querySelector('#playAgainBtn');
-  const restartButtons = document.querySelectorAll('.restartButton');
-  
-  const winConditions = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  
+  '1': 'purple',
+  '-1': 'yellow',
+  null: 'white'
+};
+
+const winningCombos = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6]
+];
+
+/*----- app's state (variables) -----*/
+let board, turn, winner;
+
+/*----- cached element references -----*/
+const message = document.querySelector('h1');
+const playAgainBtn = document.querySelector('button');
+// Note: Could also cache the <div> elements for the squares and avoid
+//       the ids on them - like we did with the Connect-Four code-along
+
+/*----- event listeners -----*/
+document.getElementById('board').addEventListener('click', handleMove);
+playAgainBtn.addEventListener('click', initialize);
+
+/*----- functions -----*/
+initialize();
+
+// Initialize all state variables, then call render()
+function initialize() {
+  board = [null, null, null, null, null, null, null, null, null];
+  // OR initialize like this:
+  // board = new Array(9).fill(null);
   turn = 1;
   winner = null;
   render();
+}
+
+// Update all impacted state, then call render()
+function handleMove(evt) {
+  // obtain index of square
+  const idx = parseInt(evt.target.id.replace('sq-', ''));
+  // Guards
+  if (
+    // Didn't click <div> in grid
+    isNaN(idx) ||
+    // Square already taken
+    board[idx] ||
+    // Game over
+    winner
+  ) return;
+  // Update state (board, turn, winner)
+  board[idx] = turn;
+  turn *= -1;
+  winner = getWinner();
+  // Render updated state
+  render();
+}
+
+function getWinner() {
+  for (let i = 0; i < winningCombos.length; i++) {
+  if (Math.abs(board[0] + board[1] + board[2]) === 3) return board[0];
+  if (Math.abs(board[3] + board[4] + board[5]) === 3) return board[3];
+  if (Math.abs(board[6] + board[7] + board[8]) === 3) return board[6];
+  if (Math.abs(board[0] + board[3] + board[6]) === 3) return board[0];
+  if (Math.abs(board[1] + board[4] + board[7]) === 3) return board[1];
+  if (Math.abs(board[2] + board[5] + board[8]) === 3) return board[2];
+  if (Math.abs(board[0] + board[4] + board[8]) === 3) return board[0];
+  if (Math.abs(board[2] + board[4] + board[6]) === 3) return board[2];
+}
   
-  function initializeGame() {
-    cell.forEach(cell => cell.addEventListener("click", cellClicked));
-    playAgainBtn.addEventListener("click", restartGame);
-    statusText.textContent = `${currentPlayer}'s turn`;
-    running = true;
+  if (board.includes(null)) return null;
+  return 'T';
+}
+
+// Visualize all state and info in the DOM
+function render() {
+  renderBoard();
+  renderMessage();
+  // Hide/show PLAY AGAIN button
+  playAgainBtn.disabled = !winner;
+}
+
+function renderBoard() {
+  board.forEach(function(sqVal, idx) {
+    const squareEl = document.getElementById(`sq-${idx}`);
+    squareEl.style.backgroundColor = COLORS[sqVal]; // Corrected line
+    // Add class if square available for hover effect
+    squareEl.className = !sqVal ? 'avail' : '';
+  });
+}
+
+function renderMessage() {
+  if (winner === 'T') {
+    message.innerHTML = 'Rats, another tie!';
+  } else if (winner) {
+    message.innerHTML = `Congrats <span style="color: ${COLORS[winner]}">${COLORS[winner].toUpperCase()}</span>!`;
+  } else {
+    message.innerHTML = `<span style="color: ${COLORS[turn]}">${COLORS[turn].toUpperCase()}</span>'s Turn`;
   }
-  
-  function cellClicked() {
-    const cellIndex = this.getAttribute("cellIndex");
-  
-    if (options[cellIndex] != "" || !running) {
-      return;
-    }
-  
-    updateCell(this, cellIndex);
-    checkWinner();
-  }
-  
-  function updateCell(cell, index) {
-    options[index] = currentPlayer;
-    cell.textContent = currentPlayer;
-  }
-  
-  function changePlayer() {
-    currentPlayer = (currentPlayer == "X") ? "O" : "X";
-    statusText.textContent = `${currentPlayer}'s turn`;
-  }
-  
-  function checkWinner() {
-    let roundWon = false;
-  
-    for (let i = 0; i < winConditions.length; i++) {
-      const condition = winConditions[i];
-      const cellA = options[condition[0]];
-      const cellB = options[condition[1]];
-      const cellC = options[condition[2]];
-  
-      if (cellA === "" || cellB === "" || cellC === "") {
-        continue;
-      }
-      if (cellA === cellB && cellB === cellC) {
-        roundWon = true;
-        running;
-      }
-    }
-  
-    if (roundWon) {
-      statusText.textContent = `${currentPlayer} wins!`;
-      running = false;
-    } else if (!options.includes("")) {
-      statusText.textContent = `Draw!`;
-      running = false;
-    } else {
-      changePlayer();
-    }
-  }
-  
+}

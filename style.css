@@ -1,26 +1,60 @@
 * {
-    box-sizing: border box
-  }
-  
-  .cell {
-    height: 20vh;
-    width: 20vh;
-    border: 2px solid;
-    box-shadow: 0 0 0 2px;
-    align-items: center;
-    color: orange;
-  }
-  
-  #cellContainer {
-    display: grid;
-    flex-direction: column;
-    justify-content: center;
-    grid-template-columns: repeat(3, auto);
-    margin: auto;
-  }
-  
-  #gameContainer {
-    font-size: 6vmin;
-    color: green;
-    text-align: center;
-  }
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 5vmin;
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(3, 20vmin);
+  grid-template-rows: repeat(3, 20vmin);
+  background-color: rgb(133, 169, 2);
+  border-radius: 5vmin;
+}
+
+#board > div {
+  margin: 3vmin;
+  background-color: rgb(216, 178, 7);
+  border: 2vmin rgb(173, 103, 6);
+  border-radius: 50%;
+}
+
+#board > div.avail {
+  cursor: pointer;
+}
+
+#board > div.avail:hover {
+  border-color: dark grey;
+}
+
+button {
+  margin-top: 5vmin;
+  padding: 1.5vmin;
+  background-color: grey;
+  color: white;
+  border-radius: 2vmin;
+  font-size: 4vmin;
+}
+
+button:disabled {
+  background-color: lightgrey;
+  color: darkgrey;
+}
+
+button:hover:not(:disabled) {
+  background-color: white;
+  color: grey;
+}
